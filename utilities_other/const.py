@@ -1,6 +1,5 @@
-
-
 class Const:
     
-    def __init__(self):
-        self.DATA_PATH = "utilities_other/"
+    DATA_PATH = "utilities_other/",
+    SETTINGS_PATH = "settings/"
+        

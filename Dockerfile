@@ -17,21 +17,32 @@ WORKDIR /app
 SHELL ["/bin/bash", "-c"]
 
 # パッケージなど
-RUN apt update && \
-    apt install -y \
+RUN apt-get update && \
+apt-get install -y \
     time \
     tzdata \
     tree \
     git \
-    # curl \
-    # gcc-9 \
-    # g++-9 \
-    # gdb \
-    python3\
-    python3-pip \
-    vim\
-    mysql-server\
-    systemd
+    curl \
+    gcc-9 \
+    g++-9 \
+    gdb \
+    python3.9 \
+    python3-pip
+# RUN apt update && apt install -y --no-install-recommends \
+#     time \
+#     tzdata \
+#     tree \
+#     git \
+#     # curl \
+#     # gcc-9 \
+#     # g++-9 \
+#     # gdb \
+#     python3\
+#     python3-pip \
+#     vim\
+#     mysql-server\
+#     systemd
 #     pytorch
 # C++でAtCoder Library(ACL)を使えるようにする
 # RUN git clone https://github.com/atcoder/ac-library.git /lib/ac-library

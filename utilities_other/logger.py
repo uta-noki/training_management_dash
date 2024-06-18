@@ -1,66 +1,69 @@
 import logging
-import logging.handlers # handlersを使用するため呼び出し必須
-from pathlib import Path
-from typing import Dict, Optional
+import inspect
+import os
 
-_log_initialized: Dict[str, logging.Logger] = {}
-
-def get_logger(
-    debug: bool = False,
-    filename: Optional[str] = None,
-    name: str = "main",
-    add_stream_handler: bool = True,
-    file_max_bytes=100000, 
-    file_backup_count=1
-) -> logging.Logger:
-    """loggerを取得
-    関数を読み込む前に実行
-    Args:
-        debug (bool): デバッグモードにするか?, Falseの場合、INFO
-        filename (str, optional): ログのファイル出力先
-        name (str, optional): ログの名前
-        add_stream_handler (bool, optional): ストリーム出力
-    Returns:
-        logging.Logger: Logger instance.
+# handler = logging.StreamHandler()
+# https://qiita.com/hubuzo/items/27156a470105bb07bfc4
+class Logger():
     """
-    global _log_initialized
-    logger = _log_initialized.get(name, None)
-    if logger is not None:
-        return logger
-    
-    format = '%(levelname)-8s: %(asctime)s | %(filename)-12s - %(funcName)-12s : %(lineno)-4s -- %(message)s'
-    logger = logging.getLogger(name)
-    
-    #ログレベルの設定
-    if debug:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
-
-    if add_stream_handler:
+    ログ出力用クラス
+    """
+    def __init__(self,name):
+        self.logger = logging.getLogger(name)
+        # ハンドラ作成
         stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(logging.Formatter(format))
-        logger.addHandler(stream_handler)
+        # フォーマッタを作成
+        formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(filename)s | %(module)s | %(lineno)d | %(process)d')
+        stream_handler.setFormatter(formatter)
+        self.logger.addHandler(stream_handler)
+        # self.o.addHandler(.setL)
+        # self.handler.setLevel(logging.debug)
     
-    # ログファイルに関する設定
-    if filename is not None:
-        Path(filename).parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.handlers.RotatingFileHandler(
-            filename, 
-            maxBytes=file_max_bytes, 
-            backupCount=file_backup_count,
-            mode="a+", # 開くか、新しいテキストファイルを作って最後から更新
-            encoding="utf-8"
-            )
-        file_handler.setFormatter(logging.Formatter(
-            format, datefmt='%Y-%m-%d %H:%M:%S'
-            ))
-        logger.addHandler(file_handler)
+    def debug(self):
+        self.logger.debug("DEBUG")
         
-    _log_initialized[name] = logger
-    return logger
+    def info(self):
+        self.logger.info("INFO")
+        
+    def warning(self):
+        self.logger.warning("WARNING")
+    
+    def error(self):
+        self.logger.error("ERROR")
+    
+#     def __init__(self):
+#         self.logger = logging.basicConfig(level=logging.DEBUG, format="[%(asctime)s] [%(process)d] [%(name)s] [%(levelname)s] %(message)s")
 
-# if __name__ == "__main__":
-#     logger = get_logger(debug=False)
-#     logger.info("info message")
-#     logger.debug("debug message")
+#     def debug(self, execution_location, log_message):
+#         self.logger = logging.getLogger(execution_location)
+#         self.logger.debug(log_message)
+
+#     def info(self, execution_location, log_message):
+#         self.logger = logging.getLogger(execution_location)
+#         self.logger.info(log_message)
+
+#     def warning(self, execution_location, log_message):
+#         self.logger = logging.getLogger(execution_location)
+#         self.logger.warning(log_message)
+
+#     def error(self, execution_location, log_message):
+#         self.logger = logging.getLogger(execution_location)
+#         self.logger.error(log_message)
+
+# class Trace():
+#     """
+#     ログ出力とセットで使う処理をまとめたクラス
+#     """
+#     @classmethod
+#     def execution_location(self):
+#         """
+#         処理の実行場所を出力する。[ファイル名: 行番号  メソッド名]
+#         """
+#         frame = inspect.currentframe().f_back
+#         return "{}:{} {}".format(os.path.basename(frame.f_code.co_filename), frame.f_lineno, frame.f_code.co_name)
+
+# def test_method():
+#     log = Logger()
+#     log.debug(Trace.execution_location(), 'debug test')
+
+# test_method()
